@@ -1,2 +1,3 @@
 # model_tactile_pop_response
-Simulating cutaneous afferent population responses using circuit impedance network
+
+This is the code for the paper "Simulating Population Responses of Tactile Receptors in Skin Based on Resistance Network"
