@@ -32,7 +32,7 @@ rads=1000/curves #mm
 distances=np.arange(-1,4.5,0.5) #mm
 
 '''
-'delete the '...' above and below if want run the simulation again'
+'delete the "..." above and below if want to run the simulation again'
 #-----------simulating reponse change as a function of curvature  --------------
 simulation_res=[]
 eps_buf=[]

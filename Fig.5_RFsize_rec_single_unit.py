@@ -57,7 +57,7 @@ sel=(points[:,0]**2+points[:,1]**2)<=6.1**2
 sdots=points[sel,:]
 
 '''
-'delete the '...' above and below if want run the simulation again'
+'delete the "..." above and below if want to run the simulation again'
 simulation_res=[]
 for repeat in range(5):
     print('repeat time: ',repeat)

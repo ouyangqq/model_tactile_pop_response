@@ -40,7 +40,7 @@ for tp in range(len(Ttype_buf)):
     tsensors.append(tsensor)
 
 '''
-'delete the '...' above and below if want run the simulation again'
+'delete the "..." above and below if want to run the simulation again'
 PF=pf*np.ones(int(simT/simdt))
 ips=imeqst.img_stimuli_scaning_with_uniformal_speed(simdt,simT,PF,speed,0,width,0,height,shift)
 simulation_res=[]

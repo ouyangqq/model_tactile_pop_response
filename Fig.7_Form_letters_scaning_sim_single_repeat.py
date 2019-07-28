@@ -31,7 +31,7 @@ for tp in range(len(Ttype_buf)):
 img1 =Image.open('saved_figs/letters_120-12.jpg')
 
 
-'delete the '...' above and below if want run the simulation again'
+'delete the "..." above and below if want to run the simulation again'
 buf1=imeqst.constructing_equivalent_probe_stimuli_from_image(img1,width,height,mysim.fingertiproi)
 np.save('data/forms_letters.npy',buf1)
 PF=pf*np.ones(int(simT/simdt))

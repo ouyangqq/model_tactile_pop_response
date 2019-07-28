@@ -86,7 +86,7 @@ sfr=0
 spr=1
 
 '''
-'delete the '...' above and below if want run the simulation again'
+'delete the "..." above and below if want to run the simulation again'
 testing_bf=[]
 rad=0.5
 #pimage=np.ones([3,3])
