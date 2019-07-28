@@ -86,7 +86,7 @@ sfr=0
 spr=1
 
 '''
-'----simulated Fring data obtained from SA1, RA, and PC afferents for the three types of vibration----'
+'delete the '...' above and below if want run the simulation again'
 testing_bf=[]
 rad=0.5
 #pimage=np.ones([3,3])
@@ -308,10 +308,6 @@ for i in range(5):A2=np.hstack([A2,outputd[i+4]])
 'plot_plot_prediction_relevance with neurophysiological counterparts'
 plot_prediction_relevance_sine_20hz()   
 plt.savefig('saved_figs/prediction_relevance_sine_20.png',bbox_inches='tight', dpi=300) 
-
-
-
-
 
 
 from PIL import Image

@@ -19,7 +19,7 @@ Tc_buf=np.zeros([len(ttype),len(pins),len(srates),len(densities),repeats])
 
 
 '''
-'................run the simulation................'
+'delete the '...' above and below if want run the simulation again '
 for ch in range(len(ttype)):
     for pin_c in range(len(pins)):
         for srate_c in range(len(srates)):

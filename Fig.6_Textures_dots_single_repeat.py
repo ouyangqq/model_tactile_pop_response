@@ -40,7 +40,7 @@ for tp in range(len(Ttype_buf)):
     tsensors.append(tsensor)
 
 '''
-'--------------------runing Simulation--------------------'
+'delete the '...' above and below if want run the simulation again'
 PF=pf*np.ones(int(simT/simdt))
 ips=imeqst.img_stimuli_scaning_with_uniformal_speed(simdt,simT,PF,speed,0,width,0,height,shift)
 simulation_res=[]
@@ -53,6 +53,7 @@ for tp in range(len(Ttype_buf)):
         tmp1.append(np.array(tsensors[tp].Va[sel,:]))
     simulation_res.append(tmp1)
 np.save('data/dots_single_repeat_simulation_res.npy',simulation_res) 
+#------------------------
 '''
 
 def print_dots_spiking_trians():

@@ -31,8 +31,8 @@ rads=1000/curves #mm
 
 distances=np.arange(-1,4.5,0.5) #mm
 
-'''
-#-----------Simulation-for-reponse change as a function of curvature  --------------
+
+#-----------run Simulation-for-reponse change as a function of curvature  --------------
 simulation_res=[]
 eps_buf=[]
 for ch in range(2):  #3 afferent types
@@ -60,8 +60,8 @@ for ch in range(2):  #3 afferent types
 np.save('data/surface_curve_simres.npy',simulation_res)
 np.save('data/surface_curve_eps.npy',eps_buf)
 #-------------------------------------------------------------------
-
-#-----------Simulation-for-reponse change as a function of distancee from RF center--------------
+'''
+'delete the '...' above and below if want run the simulation again'
 simulation_res=[]
 eps_buf=[]
 for ch in range(1):  #3 afferent types
