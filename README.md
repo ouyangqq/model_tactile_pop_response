@@ -1,21 +1,27 @@
 # model_tactile_pop_response
 
-This is the code for the paper "Simulating Population Responses of Tactile Receptors in Skin Based on Resistance Network"
+This is the code for the paper "Real-time Simulation of Populations of Tactile Receptors and Afferents in the Skin"
   
- ![image](https://github.com/ouyangqq/model_of_single_tactile_unit/blob/master/Saved_figs/diagram.jpg)  
-The source code of current model was presented in the function "tactile_units_simulating()" in file of receptor.py, which correctly implements the diagram as illustrated in Fig 1(a) in the paper (see above figure). All the simulation results in section 3 of the paper were obtained by calling this funtion. 
+ # ![image] (https://github.com/ouyangqq/model_of_single_tactile_unit/blob/master/Saved_figs/diagram.jpg) 
+The source code of current model was presented in the function "population_simulate()" in file of receptor.py, which correctly implements the diagram as illustrated in Fig. 1 in the paper. All the simulation results in section 3 of the paper were obtained by calling this funtion. 
 
 The result figures in the paper and their corresponding code file are shown as follows:  
 
  
-(1)  Intermediate_signals.py ---> Fig 3. Details of intermediate signals..  
-(2)  Single_adaption.py--->Fig 4. Adaptation properties of each afferent type...  
-(3)  Single_frequency_response.py --->Fig 5. The characteristics of frequency-threshold...  
-(4)  Spike_Timing.py --->Fig 6. Evaluation of spike-timing precision for each afferent type.  
-(5)  Computation_efficiency.py--->Fig 7. Evaluation of computation efficiency for simulating population units.  
-(6)  Comparisons_spiking_neuron_models.py --->Fig 8. Performance comparison between different spiking neuron models.   
+(1)  Fig.3_Model_fitting.py ---> Fig 3. Results of fitting parameters ...  
+(2)  Fig.4_Response_to_vibration.py--->Fig 4. Mean firing rates from the 3 afferent units...  
+(3)  Fig.5_RFsize_rec_single_unit.py--->Fig 5. Probe presentation locations relative to the tactile unit location...  
+(4)  Fig.6_Textures_dots_single_repeat.py --->Fig 6. Response to doted texture...  
+(5)  Fig.7_Form_letters_scaning_sim_single_repeat.py--->Fig 7. Response to embossed letters...  
+(6)  Fig.8_Response_to_curve surface.py--->Fig 8. SA1 responses to surface curvature...   
+(7)  Fig.9_Computation_efficiency.py --->Fig 9. Evaluation of computation efficiency...
+ 
 
-We also provide the ipynb files in folder "ipynbs" for all the simulation files above, which allow users see the results of running the code online.  
+The  other code files are described as follow:
 
-spikes_Saal_et_al.m  ---> Spking trains shown in top of in each row in Fig. 6 (a). The file must be put in 'docs' folder of Touchsim code which can be downloaded from the link: http://bensmaialab.org/code/touchsim/
+simset.py ---> the setup of simulations including: the defination of sampled skin area 
+img_to_eqstimuli.py ---> this file includes some functions of constructing EPS from image
+ultils.py ---> this file includes some common functions of reading data and calculate R2 value
+
+Besides all the observed data can be found in data/txtdata
 
