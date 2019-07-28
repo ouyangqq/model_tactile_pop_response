@@ -19,9 +19,9 @@ The result figures in the paper and their corresponding code file are shown as f
 
 The  other code files are described as follow:
 
-simset.py ---> the setup of simulations including: the defination of sampled skin area 
-img_to_eqstimuli.py ---> this file includes some functions of constructing EPS from image
-ultils.py ---> this file includes some common functions of reading data and calculate R2 value
+simset.py ---> the setup of simulations including: the defination of sampled skin area ... 
+img_to_eqstimuli.py ---> this file includes some functions of constructing EPS from image... 
+ultils.py ---> this file includes some common functions of reading data and calculate R2 value... 
 
 Besides all the observed data can be found in data/txtdata
 
