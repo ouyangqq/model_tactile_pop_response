@@ -30,7 +30,7 @@ for tp in range(len(Ttype_buf)):
 
 img1 =Image.open('saved_figs/letters_120-12.jpg')
 
-'''
+
 'delete the '...' above and below if want run the simulation again'
 buf1=imeqst.constructing_equivalent_probe_stimuli_from_image(img1,width,height,mysim.fingertiproi)
 np.save('data/forms_letters.npy',buf1)
@@ -48,7 +48,6 @@ for tp in range(len(Ttype_buf)):
     simulation_res.append(tmp)
 np.save('data/letters_simulation_res_single_repeat.npy',simulation_res)   
 #----------------------
-'''
 
 num=int(height/shift)
 sel_points=np.vstack([0*np.ones(num),np.linspace(-height/2,height/2,num)]).T #ms
