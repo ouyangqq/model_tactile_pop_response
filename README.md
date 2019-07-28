@@ -2,7 +2,7 @@
 
 This is the code for the paper "Real-time Simulation of Populations of Tactile Receptors and Afferents in the Skin"
  
-The source code of current model was presented in the function "population_simulate()" in file of receptor.py, which correctly implements the diagram as illustrated in Fig. 1 in the paper. All the simulation results in the paper were obtained by calling this funtion. You can run the code directly on your computer (>=Python3.6, with Numpy library)
+The source code of current model was presented in the function "population_simulate()" in file of receptor.py, which correctly implements the diagram as illustrated in Fig. 1 in the paper. All the simulation results in the paper were obtained by calling this funtion. You can run the code directly on your computer (>=Python3.6, with Numpy, matplotlib scipy library)
 
 The result figures in the paper and their corresponding code file are shown as follows:  
 
