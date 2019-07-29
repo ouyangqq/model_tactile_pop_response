@@ -38,7 +38,7 @@ def colormap():
 fingertiproi=np.loadtxt('data/txtdata/fingertip_roi.txt')
 oo=np.array([(fingertiproi[:,0].max()+fingertiproi[:,0].min())/2,
             (fingertiproi[:,1].max()+fingertiproi[:,1].min())/2])
-fingertiproi=fingertiproi-oo
+#fingertiproi=fingertiproi-oo
 
 bfingerroi=np.loadtxt('data/txtdata/bfinger_roi.txt')
 plamroi=np.loadtxt('data/txtdata/plam_roi.txt')
