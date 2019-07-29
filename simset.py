@@ -33,19 +33,7 @@ prope_d=rslib.Dbp #mm
 # 自定义colormap
 def colormap():
     return mpl.colors.LinearSegmentedColormap.from_list('cmap', ['#FFFFFF', '#98F5FF', '#00FF00', '#FFFF00','#FF0000', '#8B0000'], 256)
-
-
-def loc_rt(roi,locs):  #select dots_in area of restriction  unit:mm
-    OO0=0.000000000001 #0.00000001 was added to avoid overfiting
-    res=np.bool8(np.ones(len(locs)))
-    for i in range(-1,len(roi)-1): 
-        s=(0-roi[i,0])/(roi[i+1,0]-roi[i,0]+OO0)-(0-roi[i,1])/(roi[i+1,1]-roi[i,1]+OO0)
-        if(s>0):
-            jdg=(locs[:,0]-roi[i,0])/(roi[i+1,0]-roi[i,0]+OO0)-(locs[:,1]-roi[i,1])/(roi[i+1,1]-roi[i,1]+OO0)>0
-        else:
-            jdg=(locs[:,0]-roi[i,0])/(roi[i+1,0]-roi[i,0]+OO0)-(locs[:,1]-roi[i,1])/(roi[i+1,1]-roi[i,1]+OO0)<0
-        res=res&jdg
-    return res                                                              
+                                                             
 
 fingertiproi=np.loadtxt('data/txtdata/fingertip_roi.txt')
 oo=np.array([(fingertiproi[:,0].max()+fingertiproi[:,0].min())/2,
