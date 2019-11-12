@@ -24,5 +24,8 @@ The  other code files are described as follows:
 
 (3) ultils.py ---> this file includes some common functions of reading data and calculate R2 value... 
 
+spikes_Touchsim.m ---> Spking trains shown in top of in each row in Fig. 6 (a). The file must be put in 'docs' folder of Touchsim code which can be downloaded from the link: http://bensmaialab.org/code/touchsim/
+
+
 Besides all the observed data can be found in data/txtdata
 
