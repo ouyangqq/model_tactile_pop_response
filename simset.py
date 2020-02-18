@@ -12,6 +12,7 @@ import Receptors as rslib
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import matplotlib.cm as cm
+import random
 #matplot set
 #colors=['g','olive','orange','c']
 colors=['g','b','m','c'] # color set for simulatinig each afferent type and stimulus
@@ -38,7 +39,7 @@ def colormap():
 fingertiproi=np.loadtxt('data/txtdata/fingertip_roi.txt')
 oo=np.array([(fingertiproi[:,0].max()+fingertiproi[:,0].min())/2,
             (fingertiproi[:,1].max()+fingertiproi[:,1].min())/2])
-#fingertiproi=fingertiproi-oo
+fingertiproi=fingertiproi-oo
 
 bfingerroi=np.loadtxt('data/txtdata/bfinger_roi.txt')
 plamroi=np.loadtxt('data/txtdata/plam_roi.txt')
@@ -93,12 +94,12 @@ def Visualizing_covering_areas_of_tactile_units(tsensors):
             ax.spines['right'].set_color('None')
             plt.title(Ttype_buf[ch],fontsize=10)
             
-            SC=np.ones([tsensors[ch].Nr,tsensors[ch].Nc,3])
+            SC=np.ones([tsensors[ch].Nrr,tsensors[ch].Nrc,3])
             ES1=tsensors[ch].Es[0]
             ES2=tsensors[ch].Es[1]
             rands=np.random.choice(200,[tsensors[ch].Rm,3])
             for st in range(tsensors[ch].Rm):
-                SC[SC.shape[0]-ES1[st,:],ES2[st,:],:]=rands[st,:]
+                SC[SC.shape[0]-1-ES1[st,:],ES2[st,:],:]=rands[st,:]
                 
             #SC[SC.shape[0]-tsensors[ch].pdots[:,0]-1,tsensors[ch].pdots[:,1]]=100    
             plt.imshow(SC,aspect='auto')#cmap=cm.gray,
@@ -109,9 +110,9 @@ def Visualizing_covering_areas_of_tactile_units(tsensors):
             x=(sroi[:,0]-sroi[:,0].min())/DD*SC.shape[1]
             DD=sroi[:,1].max()-sroi[:,1].min()
             y=SC.shape[0]-(sroi[:,1]-sroi[:,1].min())/DD*SC.shape[0]
-            plt.plot(x,y,'y-',linewidth=2)
-            plt.scatter(tsensors[ch].OEs[:,1],SC.shape[0]-tsensors[ch].OEs[:,0],s=2,
-                       label='D='+str(round(buf[area][ch][2],1)),marker='.',c='k')
+            plt.plot(x,y-1,'yellow',linewidth=2.5)
+            plt.scatter(tsensors[ch].OEs[:,1],SC.shape[0]-1-tsensors[ch].OEs[:,0],s=2,
+                       label='$\mathrm{D}_{a}$='+str(round(buf[area][ch][2],1)),marker='.',c='k')
         
             labelsy=np.int16(np.linspace(skinroi[area][:,1].max(),skinroi[area][:,1].min(),6))
             labelsx=np.int16(np.linspace(skinroi[area][:,0].min(),skinroi[area][:,0].max(),6))
@@ -122,12 +123,60 @@ def Visualizing_covering_areas_of_tactile_units(tsensors):
     plt.savefig('saved_figs/sampled_areas.png',bbox_inches='tight', dpi=300) 
 
 
-def visualizating_resistance_matrix():
+def Visualizing_large_covering_areas_of_tactile_units(tsensors, buf):
+    plt.figure(figsize=(5.5,10)) 
+    plt.subplots_adjust(hspace=0)
+    for area in range(1):
+        for ch in range(1):
+            tsensors[ch].set_population(buf[area][ch][0],buf[area][ch][1],
+                    simTime=1,sample_rate=1000,
+                    Density=buf[area][ch][2],roi=skinroi[area]) 
+            ax=plt.subplot(1,1,ch+1)
+            ax.spines['top'].set_color('None')
+            ax.spines['right'].set_color('None')
+            ax.spines['bottom'].set_color('None')
+            ax.spines['left'].set_color('None')
+            plt.title(Ttype_buf[ch],fontsize=10)
+            
+            SC=np.ones([tsensors[ch].Nrr,tsensors[ch].Nrc,3])
+            ES1=tsensors[ch].Es[0]
+            ES2=tsensors[ch].Es[1]
+            rands=np.random.choice(200,[tsensors[ch].Rm,3])
+            
+            #rands1=random.sample(range(0,tsensors[ch].Rm),tsensors[ch].Rm)*2
+            #rands2=random.sample(range(0,tsensors[ch].Rm),tsensors[ch].Rm)*2
+            #rands3=random.sample(range(0,tsensors[ch].Rm),tsensors[ch].Rm)*2
+            #rands=np.vstack([rands1,rands2,rands3]).T
+
+            for st in range(tsensors[ch].Rm):
+                SC[SC.shape[0]-1-ES1[st,:],ES2[st,:],:]=rands[st,:]
+                
+            #SC[SC.shape[0]-tsensors[ch].pdots[:,0]-1,tsensors[ch].pdots[:,1]]=100    
+            plt.imshow(SC,aspect='auto')#cmap=cm.gray,
+            
+            sroi=np.array(skinroi[area])#*rslib.rtm(-np.pi)
+            sroi=np.vstack([skinroi[area],skinroi[area][0,:]])
+            DD=sroi[:,0].max()-sroi[:,0].min()
+            x=(sroi[:,0]-sroi[:,0].min())/DD*SC.shape[1]
+            DD=sroi[:,1].max()-sroi[:,1].min()
+            y=SC.shape[0]-(sroi[:,1]-sroi[:,1].min())/DD*SC.shape[0]
+            plt.plot(x,y,'y-',linewidth=6,c='y')
+            plt.scatter(tsensors[ch].OEs[:,1],SC.shape[0]-1-tsensors[ch].OEs[:,0],s=50,
+                       label='D='+str(round(buf[area][ch][2],1)),marker='.',c='k')
+        
+            labelsy=np.int16(np.linspace(skinroi[area][:,1].max(),skinroi[area][:,1].min(),6))
+            labelsx=np.int16(np.linspace(skinroi[area][:,0].min(),skinroi[area][:,0].max(),6))
+            plt.xticks(np.linspace(0,SC.shape[1],6),labelsx,fontsize=8)
+            plt.yticks(np.linspace(0,SC.shape[0],6),labelsy,fontsize=8)
+
+            #plt.legend(prop={'family':'simSun','size':8},loc = 1) 
+    plt.savefig('saved_figs/large_sampled_areas.png',bbox_inches='tight', dpi=300) 
+
+def visualizating_resistance_matrix(dt):
     plt.figure(figsize=(7.5,6)) 
     ax=plt.subplot(1,1,1)
-    dt=np.load('data/loc_pos_low_density.npy') 
     img=dt[0][0][3]
-    md=ax.imshow(img,aspect='auto')
+    md=ax.imshow(img,aspect='auto',cmap=plt.cm.bwr,vmin=-2,vmax=2)
     cbar=plt.colorbar(md)
     plt.rcParams['font.size'] = 12
     plt.savefig('saved_figs/resistance_matrix_img.png',bbox_inches='tight', dpi=300) 
@@ -295,29 +344,48 @@ def sim_onetype_setup(tsensor,arearoi,sT=1,sr=1000,Density=100):
     tsensor.set_population(punit_buf,grid_buf,simTime=sT,sample_rate=sr,roi=arearoi) 
 
 
+
+
+
 '''
+Ttype_buf=['SA1','RA1','PC']
+tsensors=[]
+pbuf=np.load('data/loc_pos_buf_fingertip.npy')    
+for tp in range(len(Ttype_buf)):
+    tsensor=rslib.tactile_receptors(Ttype=Ttype_buf[tp])
+    tsensor.set_population(pbuf[tp][0],pbuf[tp][1],simTime=1,sample_rate=1000,Density=pbuf[tp][2],roi=fingertiproi) 
+    print('Number of '+Ttype_buf[tp]+' in fingertip is',tsensor.Rm)
+    tsensors.append(tsensor)    
+
+
+Visualizing_covering_areas_of_tactile_units(tsensors)
+'''
+'''
+df=[np.load('data/loc_pos_buf_fingertip.npy'),[],[]]
+visualizating_resistance_matrix(df)
+
 '------------------------'
 Densitys1=np.array([[72.2,143.5,24.8],[32.5,40.9,11.3],[9.5,26.3,11.1]])
 #Densitys2=np.array(Densitys1)*1.5
-Densitys3=[[32,46,13],[15,20,6],[10,16,5]]
+Densitys3=[[16,24,8],[15,20,6],[10,16,5]]
 
 tsensors=[]
 for tp in range(len(Ttype_buf)):
     tsensor=rslib.tactile_receptors(Ttype=Ttype_buf[tp])
     tsensors.append(tsensor)
-  
+
 save_loc_data=sim_all_setup(tsensors,fingertiproi,sT=1,sr=1000,Densitys=Densitys1[0])
 np.save('data/loc_pos_buf_fingertip.npy',save_loc_data)   
 save_loc_data=sim_all_setup(tsensors,bfingerroi,sT=1,sr=1000,Densitys=Densitys1[1])   
 np.save('data/loc_pos_buf_bfinger.npy',save_loc_data)  
 save_loc_data=sim_all_setup(tsensors,plamroi,sT=1,sr=1000,Densitys=Densitys1[2]) 
 np.save('data/loc_pos_buf_plam.npy',save_loc_data)  
-Visualizing_covering_areas_of_tactile_units(tsensors)
+
 
 dt1=sim_all_setup(tsensors,fingertiproi,sT=1,sr=1000,Densitys=Densitys3[0])
 dt2=sim_all_setup(tsensors,bfingerroi,sT=1,sr=1000,Densitys=Densitys3[1])    
 dt3=sim_all_setup(tsensors,plamroi,sT=1,sr=1000,Densitys=Densitys3[2])  
 np.save('data/loc_pos_low_density.npy',[dt1,dt2,dt3])  
+Visualizing_large_covering_areas_of_tactile_units(tsensors,[dt1,dt2,dt3])
 
-visualizating_resistance_matrix()
 '''

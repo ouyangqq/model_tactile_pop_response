@@ -18,6 +18,7 @@ from skimage import transform
 import matplotlib.cm as cm
 import scipy.signal as signal
 
+
 # a function that generates a Gaussian operator
 def func(x,y,sigma=1):
     return 100*(1/(2*np.pi*sigma))*np.exp(-((x-2)**2+(y-2)**2)/(2.0*sigma**2))
@@ -60,12 +61,12 @@ def constructing_equivalent_probe_stimuli_from_pimage(pimage,w,h,roi):
     selimg=pimage
     dots=np.meshgrid(np.linspace(0,w,selimg.shape[1]),np.linspace(h,0,selimg.shape[0]))
     x=dots[0].reshape(dots[0].size,1)
-    y=dots[1].reshape(dots[1].size,1)
+    y=h-dots[1].reshape(dots[1].size,1)
     th=selimg.reshape(selimg.size,1)
     tmp=np.hstack([x,y,th])
-    pins=tmp[tmp[:,2]>0.1,:]
+    pins=tmp[:,:]
     x,y,th=pins[:,0:1],pins[:,1:2],pins[:,2:3]
-    eq_stimuli=np.hstack([x,y,x*0,x*0,np.ones([x.size,1])*mysim.prope_d*1e-3,th*1e-3])
+    eq_stimuli=np.hstack([x,y,x*0,x*0,np.ones([x.size,1])*rslib.Dbp*1e-3,th*1e-3])
 
 
     return [pimageinf,EEPS,eq_stimuli,EPS]
@@ -128,6 +129,9 @@ def constructing_equivalent_probe_stimuli_from_image(img,w,h,roi):
     
     'EPS image'
     pimage=transform.resize(imageh,(int(h/rslib.Dbp),int(w/rslib.Dbp)))
+    pimage[pimage>=0.1]=1
+    pimage[pimage<0.1]=0
+    
     epsimg=pimage
     res_buf.append(pimage)
     pimageinf=np.array([w,h,pimage.shape[1],pimage.shape[0]])
@@ -256,7 +260,7 @@ def print_figs(s,buf,fig):
     ax = fig.add_subplot(8,2,8+s)
     plt.title('Equivalent probe stimuli (EPS) image')
     img=buf[5]
-    ax.imshow(img,cmap=cm.Greys,aspect='auto')
+    ax.imshow(img,cmap=cm.Greys,aspect='auto',vmin=0,vmax=1)
     plt.xticks(np.linspace(0,img.shape[1],6),labelsx,fontsize=8)
     plt.yticks(np.linspace(0,img.shape[0],6),labelsy,fontsize=8)
     
@@ -267,7 +271,7 @@ def print_figs(s,buf,fig):
     img=buf[6]
     ax.imshow(img,cmap=cm.Greys,aspect='auto')
     ftiproi=np.loadtxt('data/txtdata/fingertip_roi.txt')
-    ftiproi=img.shape[0]-np.vstack([ftiproi,ftiproi[0,:]])*4.6
+    ftiproi=img.shape[0]-np.vstack([ftiproi,ftiproi[0,:]])*9
     plt.plot(ftiproi[:,0]-ftiproi[:,0].min(),ftiproi[:,1]-ftiproi[:,1].min(),'y-',linewidth=1)
     
     plt.fill_between(ftiproi[:,0]-ftiproi[:,0].min(),ftiproi[:,1]-ftiproi[:,1].min(),facecolor='y',alpha=0.3) 
@@ -293,7 +297,7 @@ art_image=Image.open('saved_figs/artimage.jpg')
 #art_image =Image.open('saved_figs/letters_80-10.jpg')
 art_buf=constructing_equivalent_probe_stimuli_from_image(art_image,30,10,mysim.fingertiproi)[0]
 nat_buf=constructing_equivalent_probe_stimuli_from_image(nat_image,30,10,mysim.fingertiproi)[0]
-fig =plt.figure(figsize=(10,8*2)) 
+fig =plt.figure(figsize=(10,9*2)) 
 plt.subplots_adjust(hspace=0.5) 
 plt.subplots_adjust(wspace=0.4) 
 print_figs(-1,art_buf,fig)

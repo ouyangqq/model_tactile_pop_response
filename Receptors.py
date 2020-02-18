@@ -6,7 +6,8 @@ Simulation of a tactile receptors in skin
 import numpy as np
 import time as timec
 from scipy import signal
-
+from skimage import transform
+from PIL import Image
 sp_T=0#ms
 fire_rate_max=200 #spikes/s #ms
 actionp_plus=(30-(-70)) # -70 reset_p
@@ -24,9 +25,9 @@ class tactile_receptors():
         self.VL=15*1e-3  #v
         paras_dict=np.load('data/fitting_paras.npy').item()
         if(self.Ttype=="SA1"):
-            self.thea=3*np.pi/4 
+            self.thea=3*np.pi/4 #3*np.pi/4 
             self.Cd=paras_dict['SA1']['Cd']
-            self.Rwv=0.55
+            self.Rwv=1
             self.Rc=paras_dict['SA1']['Rc']       
             self.Ku=paras_dict['SA1']['Ku']
             self.Kb1=paras_dict['SA1']['Kb1']
@@ -36,10 +37,12 @@ class tactile_receptors():
             self.wl=2*np.pi*paras_dict['SA1']['fl']
             self.Cs=paras_dict['SA1']['Cs']
             self.Cp=0
+            self.Ce=paras_dict['SA1']['Ce']
             self.Kf=paras_dict['SA1']['Kf']
-            self.maxfr=100
+            self.Nds=1
+            self.maxfr=120
         elif (self.Ttype=="RA1"):
-            self.thea=0 
+            self.thea=3*np.pi/4  
             self.Cd=paras_dict['RA1']['Cd']
             self.Rwv=1
             self.Rc=paras_dict['RA1']['Rc']
@@ -52,10 +55,12 @@ class tactile_receptors():
             self.Cs=paras_dict['RA1']['Cs']
             self.Cp=paras_dict['RA1']['w']
             self.Kf=paras_dict['RA1']['Kf']
+            self.Ce=paras_dict['RA1']['Ce']
+            self.Nds=1
             self.maxfr=200
             
         elif (self.Ttype=="PC"):
-            self.thea=0
+            self.thea=3*np.pi/4 
             self.Cd=paras_dict['RA1']['Cd']
             self.Rwv=1
             self.Rc=paras_dict['PC']['Rc']
@@ -67,6 +72,8 @@ class tactile_receptors():
             self.wl=2*np.pi*0
             self.Cs=paras_dict['PC']['Cs']
             self.Cp=paras_dict['PC']['w']
+            self.Ce=paras_dict['PC']['Ce']
+            self.Nds=2
             #self.Ta=0.004
             self.Kf=paras_dict['PC']['Kf']#37
             self.maxfr=300
@@ -137,21 +144,25 @@ class tactile_receptors():
         Wc=roi[:,0].max()-roi[:,0].min()
         Hc=roi[:,1].max()-roi[:,1].min()
         
-        
-        self.Wc1,self.Wc2=roi[:,0].max(),Wc-roi[:,0].max()
-        self.Hc1,self.Hc2=roi[:,1].max(),Hc-roi[:,1].max()
+        self.Wc,self.Hc=Wc,Hc
+        #self.Wc1,self.Wc2=roi[:,0].max(),Wc-roi[:,0].max()
+        #self.Hc1,self.Hc2=roi[:,1].max(),Hc-roi[:,1].max()
         
         
         self.Nc=int(Wc/Dbp)
         self.Nr=int(Hc/Dbp)
-        OEs=np.hstack([np.uint16(np.abs(self.r_pos[:,1:2]-roi[:,1].min())/Hc*self.Nr),
-                       np.uint16(np.abs(self.r_pos[:,0:1]-roi[:,0].min())/Wc*self.Nc)])
+        
+        self.Nrc=int(Wc/Dbp/self.Nds)
+        self.Nrr=int(Hc/Dbp/self.Nds)
+        
+        OEs=np.hstack([np.uint16((self.r_pos[:,1:2]-roi[:,1].min())/Hc*(self.Nrr)),
+                       np.uint16((self.r_pos[:,0:1]-roi[:,0].min())/Wc*(self.Nrc))])
         self.OEs=OEs
         
-        Esc=np.meshgrid(np.arange(0,self.Nr,1),np.arange(0,self.Nc,1))
+        Esc=np.meshgrid(np.arange(0,self.Nrr,1),np.arange(0,self.Nrc,1))
         Esc=np.hstack([Esc[0].reshape(Esc[0].size,1),Esc[1].reshape(Esc[0].size,1)])
         
-        locs=np.hstack([Esc[:,1:2]*Wc/self.Nc+roi[:,0].min(),Esc[:,0:1]*Hc/self.Nr+roi[:,1].min()])
+        locs=np.hstack([Esc[:,1:2]*Wc/self.Nrc+roi[:,0].min(),Esc[:,0:1]*Hc/self.Nrr+roi[:,1].min()])
         
         sroi=np.vstack([roi,roi[0,:]])
         
@@ -230,24 +241,22 @@ class tactile_receptors():
         C2=-1/(1+self.wb/self.Q*self.dt+self.wb**2*self.dt**2)
         C3=self.dt**2/(1+self.wb/self.Q*self.dt+self.wb**2*self.dt**2)
         tc1=timec.time()
-        for pt in range(0,self.t.size):  #时间 t.size
-            se1,se2=int((Ips[0][pt,1]+self.Hc1)/Dbp),int((Ips[0][pt,0]+self.Wc1)/Dbp)
-            SC=EEQS[1][se1:se1+self.Nr,se2:se2+self.Nc]*1e-3
-            Hr=np.max(SC[self.Es[0],self.Es[1]],1)
-            if(Ips[1]=='Pressure'):
-                avg=np.average(SC[SC>0])-0.00000001
-                rp=(Dbp*1e-3*np.sqrt(SC[SC>=avg].size/np.pi))
-                Dp=Cm*Ips[0][pt,2]/rp
-                if(Dp>np.max(SC)):
-                    dF=Ips[0][pt,2]-np.max(SC)*rp/Cm
-                    Dp=np.max(SC)+Cm*dF/(Dbp*1e-3*np.sqrt(SC.size/np.pi))
-            elif(Ips[1]=='Depth'):Dp=Ips[0][pt,2]
-            self.Dt[:,pt]=Hr-np.max(SC)+Dp    
-            self.Dt[self.Dt[:,pt]<=0,pt]=0
-            if(Dp>=np.max(SC)):Dp=np.max(SC)
-            self.Is[:,pt]=self.Cs*(self.Dt[:,pt]+self.SN[:,pt])
-            self.Uc[:,pt:pt+1]=self.Gi*np.mat(self.Is[:,pt:pt+1])
+        Dp=0
         for pt in range(2,self.t.size):  #时间 t.size
+            # Simplified skin contact model
+            se1,se2=int((Ips[0][pt,1]+self.Hc/2)/Dbp),int((Ips[0][pt,0]+self.Wc/2)/Dbp)
+            SC=EEQS[1][se1:se1+self.Nr,se2:se2+self.Nc]
+            # Resistance network model
+            RI=SC[0:self.Nr:self.Nds,0:self.Nc:self.Nds]*1e-3
+            SCT=RI[self.Es[0],self.Es[1]]
+            if(Ips[1]=='Pressure'):Dp=Cm*Ips[0][pt,2]/(self.Nds*Dbp*1e-3*np.sqrt(RI[RI>0].size/4))
+            elif(Ips[1]=='Depth'):Dp=Ips[0][pt,2]
+            Ht=np.max(SCT,axis=1)
+            self.Dt[:,pt]=Ht-np.max(Ht)+Dp    
+            self.Dt[self.Dt[:,pt]<=0,pt]=0
+            self.Is[:,pt]=self.Cs*(self.Dt[:,pt]+self.SN[:,pt])+self.Ce*self.Dt[:,pt]*np.var(1e3*SCT,axis=1)
+            self.Uc[:,pt:pt+1]=self.Gi*np.mat(self.Is[:,pt:pt+1])  
+            # Single-unit model
             tmp=0
             tmp=tmp+self.wb/self.Q*self.Kb1*(self.Uc[:,pt]-self.Uc[:,pt-1])/(self.dt)
             tmp=tmp+self.Kb2*(self.Uc[:,pt]-2*self.Uc[:,pt-1]+self.Uc[:,pt-2])/(self.dt)**2
@@ -262,7 +271,7 @@ class tactile_receptors():
             # In case we exceed threshold
             self.Va[self.Va[:,pt]>thresh,pt-1:pt+1]=[0.04,El] 
             # set the last step and current step to spike value and resting membrane potential
-            pt=pt+1
+        
         if(acquire_spikes==True):
             self.spike_trains=[]
             for i in range(0,self.Rm): 
